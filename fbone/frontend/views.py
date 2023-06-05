@@ -9,7 +9,7 @@ from flask_login import login_required, login_user, current_user, logout_user, \
 
 from fbone.user import User
 from fbone.extensions import db, login_manager
-from forms import SignupForm, LoginForm, RecoverPasswordForm, ReauthForm, \
+from .forms import SignupForm, LoginForm, RecoverPasswordForm, ReauthForm, \
     ChangePasswordForm
 
 
@@ -28,10 +28,10 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('user.profile'))
 
-    form = LoginForm(login=request.args.get('login', None),
-                     next=request.args.get('next', None))
+    form = LoginForm(login=request.form.get('login', None),
+                     next=request.form.get('next', None))
 
-    if form.validate_on_submit():
+    if form.validate():
         user, authenticated = User.authenticate(form.login.data,
                                     form.password.data)
 
@@ -78,7 +78,7 @@ def signup():
 
     form = SignupForm(next=request.args.get('next'))
 
-    if form.validate_on_submit():
+    if form.validate():
         user = User()
         form.populate_obj(user)
 
@@ -110,7 +110,7 @@ def change_password():
 
     form = ChangePasswordForm(activation_key=user.activation_key)
 
-    if form.validate_on_submit():
+    if form.validate():
         user.password = form.password.data
         user.activation_key = None
         db.session.add(user)
@@ -126,7 +126,7 @@ def change_password():
 def reset_password():
     form = RecoverPasswordForm()
 
-    if form.validate_on_submit():
+    if form.validate():
         user = User.query.filter_by(email=form.email.data).first()
 
         if user:

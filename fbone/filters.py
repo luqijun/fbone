@@ -2,7 +2,7 @@
 
 import re
 from datetime import datetime
-from jinja2 import Markup, escape
+from markupsafe import Markup, escape
 
 
 def format_date(value, format='%Y-%m-%d'):

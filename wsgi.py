@@ -11,8 +11,10 @@ project = "fbone"
 #os.environ['HOME'] = pwd.getpwuid(os.getuid()).pw_dir
 
 # activate virtualenv
-activate_this = os.path.join(os.environ["HOME"], ".virtualenvs", project, "bin/activate_this.py")
-execfile(activate_this, dict(__file__=activate_this))
+activate_this = os.path.join(os.environ["HOME"], ".virtualenvs", project,
+                             "bin/activate_this.py")
+if os.path.exists(activate_this):
+    exec(activate_this, dict(__file__=activate_this))
 
 BASE_DIR = os.path.join(os.path.dirname(__file__))
 if BASE_DIR not in sys.path:
@@ -20,4 +22,7 @@ if BASE_DIR not in sys.path:
 
 # give wsgi the "application"
 from fbone import create_app
+
 application = create_app()
+if __name__ == '__main__':
+    application.run(port=5001, debug=True)
